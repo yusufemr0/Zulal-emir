@@ -284,6 +284,7 @@
   .sayac-num{ font-family:'Cormorant Garamond'; font-size:clamp(56px,18vw,84px); font-weight:600; color:var(--rose-deep); line-height:1; }
   .sayac-label{ font-size:14px; margin-top:8px; letter-spacing:.02em; }
   .sayac-clock{ margin-top:16px; font-family:'Cormorant Garamond'; font-size:clamp(22px,6vw,30px); font-weight:600; letter-spacing:.08em; color:var(--gold); font-variant-numeric:tabular-nums; }
+  .sayac-clock-label{ margin-top:4px; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); opacity:.7; }
   .sayac-date{ margin-top:22px; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--gold); opacity:.85; }
   .sayac-quote-frame{
     position:relative;
@@ -452,6 +453,7 @@
       <div class="sayac-num" id="sayacNum">—</div>
       <div class="sayac-label">gündür birlikteyiz</div>
       <div class="sayac-clock" id="sayacClock">00:00:00</div>
+      <div class="sayac-clock-label">toplam saat · dakika · saniye</div>
       <div class="sayac-date">29.05.2026 · çıkma tarihimiz</div>
     </div>
     <div class="sayac-quote-frame">
@@ -690,7 +692,15 @@ function renderSayac(){
   const el = document.getElementById('sayacNum');
   if(el) el.textContent = days >= 0 ? days : 0;
   const clockEl = document.getElementById('sayacClock');
-  if(clockEl) clockEl.textContent = pad2(now.getHours())+':'+pad2(now.getMinutes())+':'+pad2(now.getSeconds());
+  if(clockEl){
+    const startExact = new Date(RELATIONSHIP_START.getFullYear(), RELATIONSHIP_START.getMonth(), RELATIONSHIP_START.getDate(), 0, 0, 0);
+    const elapsedMs = Math.max(0, now.getTime() - startExact.getTime());
+    const totalSeconds = Math.floor(elapsedMs/1000);
+    const hh = Math.floor(totalSeconds/3600);
+    const mm = Math.floor((totalSeconds%3600)/60);
+    const ss = totalSeconds%60;
+    clockEl.textContent = hh + ':' + pad2(mm) + ':' + pad2(ss);
+  }
   const quoteEl = document.getElementById('sayacQuote');
   if(quoteEl){
     const dayIndex = Math.floor(nowMid.getTime()/86400000);
